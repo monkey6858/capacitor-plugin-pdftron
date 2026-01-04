@@ -1,6 +1,6 @@
 {
   "name": "@monkey6858/capacitor-plugin-pdftron",
-  "version": "0.0.1",
+  "version": "0.0.3",
   "description": "PDFTron mobile SDK for Capacitor.",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",
@@ -43,7 +43,8 @@
     "build": "npm run clean && npm run docgen && tsc && rollup -c rollup.config.mjs",
     "clean": "rimraf ./dist",
     "watch": "tsc --watch",
-    "prepublishOnly": "npm run build"
+    "prepublishOnly": "npm run build",
+    "async": "npm run build && yalc push"
   },
   "devDependencies": {
     "@capacitor/android": "^7.0.0",
