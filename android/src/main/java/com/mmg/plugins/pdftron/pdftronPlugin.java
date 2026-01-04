@@ -6,10 +6,10 @@ import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
 import com.getcapacitor.annotation.CapacitorPlugin;
 
-@CapacitorPlugin(name = "pdftron")
-public class pdftronPlugin extends Plugin {
+@CapacitorPlugin(name = "PDFTron")
+public class PDFTronPlugin extends Plugin {
 
-    private pdftron implementation = new pdftron();
+    private PDFTron implementation = new PDFTron();
 
     @PluginMethod
     public void echo(PluginCall call) {

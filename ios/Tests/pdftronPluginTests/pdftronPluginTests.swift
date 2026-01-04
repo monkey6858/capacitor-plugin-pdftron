@@ -1,12 +1,12 @@
 import XCTest
-@testable import pdftronPlugin
+@testable import PDFTronPlugin
 
-class pdftronTests: XCTestCase {
+class PDFTronTests: XCTestCase {
     func testEcho() {
         // This is an example of a functional test case for a plugin.
         // Use XCTAssert and related functions to verify your tests produce the correct results.
 
-        let implementation = pdftron()
+        let implementation = PDFTron()
         let value = "Hello, World!"
         let result = implementation.echo(value)
 

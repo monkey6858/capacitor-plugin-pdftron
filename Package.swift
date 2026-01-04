@@ -7,22 +7,22 @@ let package = Package(
     products: [
         .library(
             name: "CapacitorPluginPdftron",
-            targets: ["pdftronPlugin"])
+            targets: ["PDFTronPlugin"])
     ],
     dependencies: [
         .package(url: "https://github.com/ionic-team/capacitor-swift-pm.git", from: "7.0.0")
     ],
     targets: [
         .target(
-            name: "pdftronPlugin",
+            name: "PDFTronPlugin",
             dependencies: [
                 .product(name: "Capacitor", package: "capacitor-swift-pm"),
                 .product(name: "Cordova", package: "capacitor-swift-pm")
             ],
-            path: "ios/Sources/pdftronPlugin"),
+            path: "ios/Sources/PDFTronPlugin"),
         .testTarget(
-            name: "pdftronPluginTests",
-            dependencies: ["pdftronPlugin"],
-            path: "ios/Tests/pdftronPluginTests")
+            name: "PDFTronPluginTests",
+            dependencies: ["PDFTronPlugin"],
+            path: "ios/Tests/PDFTronPluginTests")
     ]
 )

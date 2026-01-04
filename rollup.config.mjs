@@ -4,7 +4,7 @@ export default {
     {
       file: 'dist/plugin.js',
       format: 'iife',
-      name: 'capacitorpdftron',
+      name: 'capacitorPDFTron',
       globals: {
         '@capacitor/core': 'capacitorExports',
       },

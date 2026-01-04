@@ -1,10 +1,10 @@
 import { registerPlugin } from '@capacitor/core';
 
-import type { pdftronPlugin } from './definitions';
+import type { PDFTronPlugin } from './definitions';
 
-const pdftron = registerPlugin<pdftronPlugin>('pdftron', {
-  web: () => import('./web').then((m) => new m.pdftronWeb()),
+const PDFTron = registerPlugin<PDFTronPlugin>('PDFTron', {
+  web: () => import('./web').then((m) => new m.PDFTronWeb()),
 });
 
 export * from './definitions';
-export { pdftron };
+export { PDFTron };
