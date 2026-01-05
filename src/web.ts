@@ -8,4 +8,9 @@ export class PDFTronWeb extends WebPlugin implements PDFTronPlugin {
     console.log('ECHO', options);
     return options;
   }
+
+  // 初始化
+  async initialize(options: { settings: string; viewerElement: string }): Promise<void> {
+    console.log('web options', options);
+  }
 }

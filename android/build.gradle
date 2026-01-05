@@ -26,6 +26,11 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        // PDFTron相关信息
+        multiDexEnabled true
+        vectorDrawables.useSupportLibrary = true
+        manifestPlaceholders = [pdftronLicenseKey:""]
     }
     buildTypes {
         release {
@@ -45,6 +50,9 @@ android {
 repositories {
     google()
     mavenCentral()
+    maven {
+        url "https://pdftron-maven.s3.amazonaws.com/release"
+    }
 }
 
 
@@ -55,4 +63,11 @@ dependencies {
     testImplementation "junit:junit:$junitVersion"
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
+
+    // PDFTron相关依赖
+//    implementation files('libs/pdftron.aar')
+//    implementation files('libs/tools.aar')
+    implementation "com.pdftron:pdftron:11.9.0"
+    implementation "com.pdftron:tools:11.9.0"
+
 }
