@@ -65,8 +65,6 @@ dependencies {
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
 
     // PDFTron相关依赖
-//    implementation files('libs/pdftron.aar')
-//    implementation files('libs/tools.aar')
     implementation "com.pdftron:pdftron:11.9.0"
     implementation "com.pdftron:tools:11.9.0"
 

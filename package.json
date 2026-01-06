@@ -1,6 +1,6 @@
 {
   "name": "@monkey6858/capacitor-plugin-pdftron",
-  "version": "0.0.3",
+  "version": "0.0.5",
   "description": "PDFTron mobile SDK for Capacitor.",
   "main": "dist/plugin.cjs.js",
   "module": "dist/esm/index.js",

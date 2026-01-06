@@ -327,9 +327,9 @@ public class PDFTronPlugin extends Plugin {
         mBuilder = new ViewerConfig.Builder()
                 .useSupportActionBar(false)
                 .fullscreenModeEnabled(false)
-                .multiTabEnabled(false);
-//                .saveCopyExportPath(cordova.getContext().getCacheDir().getAbsolutePath())
-//                .openUrlCachePath(cordova.getContext().getCacheDir().getAbsolutePath());
+                .multiTabEnabled(false)
+                .saveCopyExportPath(getContext().getCacheDir().getAbsolutePath())
+                .openUrlCachePath(getContext().getCacheDir().getAbsolutePath());
         mToolManagerBuilder = ToolManagerBuilder.from();
 
         // 配置
