@@ -13,4 +13,7 @@ export class PDFTronWeb extends WebPlugin implements PDFTronPlugin {
   async initialize(options: { settings: string; viewerElement: string }): Promise<void> {
     console.log('web options', options);
   }
+
+  // 保存
+  async saveDocument(): Promise<void> {}
 }

@@ -9,6 +9,7 @@ import android.view.ViewGroup;
 import android.webkit.WebView;
 
 import com.getcapacitor.JSObject;
+import com.getcapacitor.Logger;
 import com.getcapacitor.Plugin;
 import com.getcapacitor.PluginCall;
 import com.getcapacitor.PluginMethod;
@@ -65,38 +66,37 @@ public class PDFTronPlugin extends Plugin {
     private ViewerConfig.Builder mBuilder;
     private ToolManagerBuilder mToolManagerBuilder;
 
-    private PDFTron implementation = new PDFTron();
+    // 对外方法-基本方法（示例）
+    @PluginMethod
+    public void echo(PluginCall call) {
+        String value = call.getString("value");
 
-
-    public void hideView() {
-        if (mDocumentView == null) {
-            return;
-        }
-        mDocumentView.setVisibility(View.GONE);
+        JSObject ret = new JSObject();
+        Logger.info("Echo", value);
+        ret.put("value", value);
+        call.resolve(ret);
     }
 
-    public void fireJavascriptEvent(String action) {
-        sendEventMessage(action);
+    // 对外方法-初始化
+    @PluginMethod
+    public void initialize(PluginCall call) {
+        mBuilder = new ViewerConfig.Builder()
+                .useSupportActionBar(false)
+                .fullscreenModeEnabled(false)
+                .multiTabEnabled(false)
+                .saveCopyExportPath(getContext().getCacheDir().getAbsolutePath())
+                .openUrlCachePath(getContext().getCacheDir().getAbsolutePath());
+        mToolManagerBuilder = ToolManagerBuilder.from();
+
+        // 获取配置
+        String options = call.getString("settings");
+        // 获取加载组件
+        String viewerElement = call.getString("viewerElement");
+        // 创建Viewer
+        addDocumentViewer(options, viewerElement, call);
     }
 
-    private void sendEventMessage(String action) {
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("action", action);
-        } catch (JSONException e) {
-            Log.e(TAG, "Failed to create event message", e);
-
-        }
-    }
-
-    // 获取ToolManager设置
-    private ViewerConfig getViewerConfig() {
-        return mBuilder
-                .toolManagerBuilder(mToolManagerBuilder)
-                .build();
-    }
-
-    // 创建Viewer
+    // 添加文档视图
     private void addDocumentViewer(String options, String viewerElement, PluginCall call) {
         try {
             final JSONObject jsonObject = new JSONObject(options);
@@ -107,6 +107,7 @@ public class PDFTronPlugin extends Plugin {
         }
     }
 
+    // 创建文档视图实例
     private void createDocumentViewerImpl(@NonNull JSONObject options, @Nullable String viewerElement, PluginCall call) {
         try {
             Activity currentActivity = getActivity();
@@ -117,7 +118,7 @@ public class PDFTronPlugin extends Plugin {
                 mDocumentView.setSupportFragmentManager(fragmentActivity.getSupportFragmentManager());
                 mDocumentView.setPlugin(this);
 
-                // parse options
+                // 配置-初始文档
                 if (options.has(Key_initialDoc)) {
                     String initialDoc = options.getString(Key_initialDoc);
                     mDocumentView.setDocumentUri(Uri.parse(initialDoc));
@@ -128,9 +129,10 @@ public class PDFTronPlugin extends Plugin {
                     mDocumentView.setPassword(password);
                 }
 
+                // 配置-渲染位置
                 if (options.has(Key_boundingRect)) {
                     String rect = options.getString(Key_boundingRect);
-                    Log.d("cordova", "boundingRect: " + rect);
+                    Log.d("capacitor", "boundingRect: " + rect);
                     JSONObject rectObject = new JSONObject(rect);
                     int left = (int) Float.parseFloat(rectObject.getString("left"));
                     int top = (int) Float.parseFloat(rectObject.getString("top"));
@@ -142,23 +144,26 @@ public class PDFTronPlugin extends Plugin {
                             (int) Utils.convDp2Pix(getContext(), height));
                 }
 
+                // 配置-禁用组件
                 if (options.has(Key_disabledElements)) {
                     disableElements(options.getJSONArray(Key_disabledElements));
                 }
 
-//                String navIcon = "ic_menu_white_24dp";
-//                if (options.has(Key_navIconTitle)) {
-//                    String title = options.getString(Key_navIconTitle);
-//                    if (Key_menu.equalsIgnoreCase(title)) {
-//                        navIcon = "ic_menu_white_24dp";
-//                    } else if (Key_back.equalsIgnoreCase(title)) {
-//                        navIcon = "ic_arrow_back_white_24dp";
-//                    } else if (Key_close.equalsIgnoreCase(title)) {
-//                        navIcon = "ic_close_white_24dp";
-//                    }
-//                }
-//                mDocumentView.setNavIconResName(navIcon);
+                // 配置-左上角按钮
+                String navIcon = "ic_menu_white_24dp";
+                if (options.has(Key_navIconTitle)) {
+                    String title = options.getString(Key_navIconTitle);
+                    if (Key_menu.equalsIgnoreCase(title)) {
+                        navIcon = "ic_menu_white_24dp";
+                    } else if (Key_back.equalsIgnoreCase(title)) {
+                        navIcon = "ic_arrow_back_white_24dp";
+                    } else if (Key_close.equalsIgnoreCase(title)) {
+                        navIcon = "ic_close_white_24dp";
+                    }
+                }
+                mDocumentView.setNavIconResName(navIcon);
                 boolean showNav = true;
+                // 是否展示左上角按钮
                 if (options.has(Key_showNavIcon)) {
                     showNav = options.getBoolean(Key_showNavIcon);
                 }
@@ -241,28 +246,7 @@ public class PDFTronPlugin extends Plugin {
         }
     }
 
-    private void attachDocumentViewerImpl() throws PDFNetException {
-        if (mDocumentView == null) {
-            return;
-        }
-        mDocumentView.setVisibility(View.VISIBLE);
-        if (mDocumentView.getParent() != null) {
-            return;
-        }
-        mDocumentView.setViewerConfig(getViewerConfig());
-        if (bridge.getWebView() instanceof WebView) {
-            WebView wv = (WebView) bridge.getWebView();
-            if (wv.getParent() != null && wv.getParent() instanceof ViewGroup) {
-                ((ViewGroup) wv.getParent()).addView(mDocumentView);
-            } else {
-                wv.addView(mDocumentView);
-            }
-        } else {
-            throw new PDFNetException("CapacitorWebView is not instanceof WebView", -1, "PDFTron.java", "attachDocumentViewerImpl", "Unable to add viewer.");
-        }
-    }
-
-    // 工具类型转换
+    // 工具栏类型转换
     private ToolManager.ToolMode convStringToToolMode(String item) {
         ToolManager.ToolMode mode = null;
         if ("freeHandToolButton".equals(item) || "AnnotationCreateFreeHand".equals(item)) {
@@ -313,44 +297,72 @@ public class PDFTronPlugin extends Plugin {
         return mode;
     }
 
-    @PluginMethod
-    public void echo(PluginCall call) {
-        String value = call.getString("value");
-
-        JSObject ret = new JSObject();
-        ret.put("value", implementation.echo(value));
-        call.resolve(ret);
-    }
-
-    @PluginMethod
-    public void initialize(PluginCall call) {
-        mBuilder = new ViewerConfig.Builder()
-                .useSupportActionBar(false)
-                .fullscreenModeEnabled(false)
-                .multiTabEnabled(false)
-                .saveCopyExportPath(getContext().getCacheDir().getAbsolutePath())
-                .openUrlCachePath(getContext().getCacheDir().getAbsolutePath());
-        mToolManagerBuilder = ToolManagerBuilder.from();
-
-        // 配置
-        String options = call.getString("settings");
-        // 加载组件
-        String viewerElement = call.getString("viewerElement");
-        addDocumentViewer(options,viewerElement,call);
-    }
-
-    @PluginMethod
-    public void showDocumentViewer(PluginCall call) {
-        getActivity().runOnUiThread(() -> {
-            if (mDocumentView != null) {
-                try {
-                    attachDocumentViewerImpl();
-                    call.resolve();
-                } catch (Exception ex) {
-//                    call.resolve(ex.getMessage());
-                }
+    // 添加文档视图实例
+    private void attachDocumentViewerImpl() throws PDFNetException {
+        if (mDocumentView == null) {
+            return;
+        }
+        mDocumentView.setVisibility(View.VISIBLE);
+        if (mDocumentView.getParent() != null) {
+            return;
+        }
+        mDocumentView.setViewerConfig(getViewerConfig());
+        if (bridge.getWebView() instanceof WebView) {
+            WebView wv = (WebView) bridge.getWebView();
+            if (wv.getParent() != null && wv.getParent() instanceof ViewGroup) {
+                ((ViewGroup) wv.getParent()).addView(mDocumentView);
+            } else {
+                wv.addView(mDocumentView);
             }
-        });
+        } else {
+            throw new PDFNetException("CapacitorWebView is not instanceof WebView", -1, "PDFTron.java", "attachDocumentViewerImpl", "Unable to add viewer.");
+        }
     }
 
+    // 获取ToolManager设置
+    private ViewerConfig getViewerConfig() {
+        return mBuilder
+                .toolManagerBuilder(mToolManagerBuilder)
+                .build();
+    }
+
+    // 隐藏视图
+    public void hideView() {
+        if (mDocumentView == null) {
+            return;
+        }
+        mDocumentView.setVisibility(View.GONE);
+    }
+
+    // 接收监听信息
+    public void fireJavascriptEvent(String action) {
+        sendEventMessage(action);
+    }
+
+    // 发送监听消息给JS端
+    private void sendEventMessage(String action) {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("action", action);
+        } catch (JSONException e) {
+            Log.e(TAG, "Failed to create event message", e);
+        }
+    }
+
+    // 对外方法-保存
+    @PluginMethod
+    public void saveDocument(PluginCall call) {
+        if (mDocumentView != null && mDocumentView.mPdfViewCtrlTabHostFragment != null && mDocumentView.mPdfViewCtrlTabHostFragment.getCurrentPdfViewCtrlFragment() != null) {
+            mDocumentView.mPdfViewCtrlTabHostFragment.getCurrentPdfViewCtrlFragment().save(false, true, true);
+
+            JSObject ret = new JSObject();
+            ret.put("filePath", mDocumentView.mPdfViewCtrlTabHostFragment.getCurrentPdfViewCtrlFragment().getFilePath());
+
+            call.resolve(ret);
+        } else {
+            call.reject("Saving failed.");
+        }
+    }
+
+    // 对外方法-关闭
 }

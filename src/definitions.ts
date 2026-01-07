@@ -4,4 +4,7 @@ export interface PDFTronPlugin {
 
   // 初始化
   initialize(options: { settings: string; viewerElement: string }): Promise<void>;
+  
+  // 保存
+  saveDocument(): Promise<void>;
 }

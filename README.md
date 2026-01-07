@@ -15,6 +15,7 @@ npx cap sync
 
 * [`echo(...)`](#echo)
 * [`initialize(...)`](#initialize)
+* [`saveDocument()`](#savedocument)
 
 </docgen-index>
 
@@ -45,6 +46,15 @@ initialize(options: { settings: string; viewerElement: string; }) => Promise<voi
 | Param         | Type                                                      |
 | ------------- | --------------------------------------------------------- |
 | **`options`** | <code>{ settings: string; viewerElement: string; }</code> |
+
+--------------------
+
+
+### saveDocument()
+
+```typescript
+saveDocument() => Promise<void>
+```
 
 --------------------
 
